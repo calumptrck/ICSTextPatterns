@@ -1,2 +1,2 @@
 # ICSTextPatterns
-ICS Finals Project
+ICS Final Project
