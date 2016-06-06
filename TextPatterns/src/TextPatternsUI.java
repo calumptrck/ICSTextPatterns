@@ -42,12 +42,17 @@ public class TextPatternsUI extends javax.swing.JFrame {
         int mode;
         if (modeEmailsRadio.isSelected()) {
             mode = 0;
+            System.out.println("Searching for emails...");
         } else if (modePhoneRadio.isSelected()) {
             mode = 1;
+            System.out.println("Searching for phone numbers...");
         } else {
             mode = 2;
+            System.out.println("Searching for website URLs...");
         }
+        
         return mode;
+        
     }
 
     /**
