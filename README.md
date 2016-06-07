@@ -3,4 +3,6 @@
 
 Takes a plaintext input from clipboard or a text area box and filters it for either email addresses, phone numbers, or website URLs. Displays the results in a text area box, and allows the user to copy the contents to their clipboard.
 
-![alt tag](https://raw.githubusercontent.com/calumptrck/ICSTextPatterns/master/Images/ICS.png)
+![Mode tab](https://raw.githubusercontent.com/calumptrck/ICSTextPatterns/master/Images/ICS.png)
+
+<sub><sup>Swing GUI</sup></sub>
