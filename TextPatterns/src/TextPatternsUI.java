@@ -6,17 +6,24 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher; 
 import java.util.regex.Pattern;
 
-
-
 /**
  * Date: Jun 5, 2016 
- * Author: calumpatrick 
- * Program: 
- * Purpose:
+ * Author: Calum Patrick 
+ * Program: TextPatterns
+ * Purpose: Take a plaintext input from clipboard or a textArea box and filter it
+ * for either email addresses, phone numbers, or web-site URLs. Display the results
+ * in a textArea box, and allow the user to copy the contents to their clipboard. 
  */
 public class TextPatternsUI extends javax.swing.JFrame {
     private String stringRegex="";
     private Matcher compiler;
+    
+    // REGEX SEARCH PATTERNS
+    public String rEmail = "[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]{2,6)+";
+    public String rPhone = "(\\+\\d)*\\s*(\\(\\d{3}\\)\\s*)*\\d{3}(-{0,1}|\\s{0,1})\\d{2}(-{0,1}|\\s{0,1})\\d{2}";
+    public String rWebsite = "((http[s]?|ftp):\\/)?\\/?([^:\\/\\s]+)((\\/\\w+)*\\/)([\\w\\-\\.]+[^#?\\s]+)(.*)?(#[\\w\\-]+)?";
+    
+    
     /**
      * Creates new form TextPatternsUI
      */
@@ -47,10 +54,11 @@ public class TextPatternsUI extends javax.swing.JFrame {
     
 /**
  * Find what the user wants to search for, and which RegEx to compile.
+ * Also sets the RegEx compile search pattern.
  * 
  * Mode 0 = Email
  * Mode 1 = Phone Numbers
- * Mode 2 = Website URLs
+ * Mode 2 = Web-site URLs
  * 
  */
     public void getMode() {
@@ -58,14 +66,15 @@ public class TextPatternsUI extends javax.swing.JFrame {
         if (modeEmailsRadio.isSelected()) {
             mode = 0;
             System.out.println("Searching for emails...");
-            compiler = Pattern.compile("[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+").matcher(stringRegex);
+            compiler = Pattern.compile(rEmail).matcher(stringRegex);
         } else if (modePhoneRadio.isSelected()) {
             mode = 1;
             System.out.println("Searching for phone numbers...");
-            compiler = Pattern.compile("(\\+\\d)*\\s*(\\(\\d{3}\\)\\s*)*\\d{3}(-{0,1}|\\s{0,1})\\d{2}(-{0,1}|\\s{0,1})\\d{2}").matcher(stringRegex);
+            compiler = Pattern.compile(rPhone).matcher(stringRegex);
         } else {
             mode = 2;
             System.out.println("Searching for website URLs...");
+            compiler = Pattern.compile(rWebsite).matcher(stringRegex);
         }   
     }
 
@@ -81,7 +90,7 @@ public class TextPatternsUI extends javax.swing.JFrame {
         jFileChooser2 = new javax.swing.JFileChooser();
         jPanel4 = new javax.swing.JPanel();
         modeOptionsGroup = new javax.swing.ButtonGroup();
-        jTabbedPane1 = new javax.swing.JTabbedPane();
+        tabs = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         modeEmailsRadio = new javax.swing.JRadioButton();
@@ -98,6 +107,8 @@ public class TextPatternsUI extends javax.swing.JFrame {
         jScrollPane2 = new javax.swing.JScrollPane();
         outputTextArea = new javax.swing.JTextArea();
         outputResultsLabel = new javax.swing.JLabel();
+        outputClearButton = new javax.swing.JButton();
+        outputClipboardButton = new javax.swing.JButton();
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -112,7 +123,7 @@ public class TextPatternsUI extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jTabbedPane1.setToolTipText("");
+        tabs.setToolTipText("");
 
         jLabel1.setText("What would you like to search for?");
 
@@ -152,7 +163,7 @@ public class TextPatternsUI extends javax.swing.JFrame {
                 .addContainerGap(197, Short.MAX_VALUE))
         );
 
-        jTabbedPane1.addTab("Mode", jPanel1);
+        tabs.addTab("Mode", jPanel1);
 
         jLabel3.setText("Text input:");
 
@@ -216,13 +227,27 @@ public class TextPatternsUI extends javax.swing.JFrame {
                 .addContainerGap(38, Short.MAX_VALUE))
         );
 
-        jTabbedPane1.addTab("Source", jPanel2);
+        tabs.addTab("Source", jPanel2);
 
         outputTextArea.setColumns(20);
         outputTextArea.setRows(5);
         jScrollPane2.setViewportView(outputTextArea);
 
         outputResultsLabel.setText("Results:");
+
+        outputClearButton.setText("Clear");
+        outputClearButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                outputClearButtonActionPerformed(evt);
+            }
+        });
+
+        outputClipboardButton.setText("Copy results to clipboard");
+        outputClipboardButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                outputClipboardButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -231,10 +256,14 @@ public class TextPatternsUI extends javax.swing.JFrame {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 535, Short.MAX_VALUE)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 595, Short.MAX_VALUE)
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addComponent(outputResultsLabel)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addComponent(outputClearButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(outputClipboardButton)))
                 .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
@@ -244,10 +273,14 @@ public class TextPatternsUI extends javax.swing.JFrame {
                 .addComponent(outputResultsLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(41, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(outputClearButton)
+                    .addComponent(outputClipboardButton))
+                .addContainerGap(18, Short.MAX_VALUE))
         );
 
-        jTabbedPane1.addTab("Output", jPanel3);
+        tabs.addTab("Output", jPanel3);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -255,14 +288,14 @@ public class TextPatternsUI extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jTabbedPane1)
+                .addComponent(tabs)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jTabbedPane1)
+                .addComponent(tabs)
                 .addContainerGap())
         );
 
@@ -293,6 +326,15 @@ public class TextPatternsUI extends javax.swing.JFrame {
         compileReg();
         
     }//GEN-LAST:event_sourceGoButtonActionPerformed
+
+    private void outputClearButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_outputClearButtonActionPerformed
+        // output clear button
+        outputTextArea.setText("");
+    }//GEN-LAST:event_outputClearButtonActionPerformed
+
+    private void outputClipboardButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_outputClipboardButtonActionPerformed
+        // output clipboard button (TODO)
+    }//GEN-LAST:event_outputClipboardButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -338,17 +380,19 @@ public class TextPatternsUI extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JRadioButton modeEmailsRadio;
     private javax.swing.ButtonGroup modeOptionsGroup;
     private javax.swing.JRadioButton modePhoneRadio;
     private javax.swing.JRadioButton modeWebsiteRadio;
+    private javax.swing.JButton outputClearButton;
+    private javax.swing.JButton outputClipboardButton;
     private javax.swing.JLabel outputResultsLabel;
     private javax.swing.JTextArea outputTextArea;
     private javax.swing.JButton sourceClearButton;
     private javax.swing.JButton sourceClipboardButton;
     private javax.swing.JButton sourceGoButton;
     public static javax.swing.JTextArea sourceTextArea;
+    private javax.swing.JTabbedPane tabs;
     // End of variables declaration//GEN-END:variables
   
     
