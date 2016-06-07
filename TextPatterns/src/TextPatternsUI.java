@@ -14,9 +14,9 @@ import java.util.regex.Pattern;
  * Program: 
  * Purpose:
  */
-
 public class TextPatternsUI extends javax.swing.JFrame {
-
+    private String stringRegex="";
+    private Matcher compiler;
     /**
      * Creates new form TextPatternsUI
      */
@@ -36,10 +36,10 @@ public class TextPatternsUI extends javax.swing.JFrame {
     }
     
     public void compileReg() {
-        S = sourceTextArea.getText();
-        while (M.find()) {
-        System.out.println(M.group());
-        outputTextArea.append(M.group()+"\n");
+        stringRegex = sourceTextArea.getText();
+        while (compiler.find()) {
+        System.out.println(compiler.group());
+        outputTextArea.append(compiler.group()+"\n");
         }
     }
 
@@ -53,21 +53,20 @@ public class TextPatternsUI extends javax.swing.JFrame {
  * Mode 2 = Website URLs
  * 
  */
-    public int getMode() {
+    public void getMode() {
         int mode;
         if (modeEmailsRadio.isSelected()) {
             mode = 0;
             System.out.println("Searching for emails...");
+            compiler = Pattern.compile("[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+").matcher(stringRegex);
         } else if (modePhoneRadio.isSelected()) {
             mode = 1;
             System.out.println("Searching for phone numbers...");
+            compiler = Pattern.compile("(\\+\\d)*\\s*(\\(\\d{3}\\)\\s*)*\\d{3}(-{0,1}|\\s{0,1})\\d{2}(-{0,1}|\\s{0,1})\\d{2}").matcher(stringRegex);
         } else {
             mode = 2;
             System.out.println("Searching for website URLs...");
-        }
-        
-        return mode;
-        
+        }   
     }
 
     /**
@@ -119,27 +118,12 @@ public class TextPatternsUI extends javax.swing.JFrame {
 
         modeOptionsGroup.add(modeEmailsRadio);
         modeEmailsRadio.setText("Emails");
-        modeEmailsRadio.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                modeEmailsRadioActionPerformed(evt);
-            }
-        });
 
         modeOptionsGroup.add(modePhoneRadio);
         modePhoneRadio.setText("Phone Numbers");
-        modePhoneRadio.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                modePhoneRadioActionPerformed(evt);
-            }
-        });
 
         modeOptionsGroup.add(modeWebsiteRadio);
         modeWebsiteRadio.setText("Website URLs");
-        modeWebsiteRadio.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                modeWebsiteRadioActionPerformed(evt);
-            }
-        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -152,7 +136,7 @@ public class TextPatternsUI extends javax.swing.JFrame {
                     .addComponent(modePhoneRadio)
                     .addComponent(modeEmailsRadio)
                     .addComponent(jLabel1))
-                .addContainerGap(313, Short.MAX_VALUE))
+                .addContainerGap(371, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -165,7 +149,7 @@ public class TextPatternsUI extends javax.swing.JFrame {
                 .addComponent(modePhoneRadio)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(modeWebsiteRadio)
-                .addContainerGap(179, Short.MAX_VALUE))
+                .addContainerGap(197, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Mode", jPanel1);
@@ -212,7 +196,7 @@ public class TextPatternsUI extends javax.swing.JFrame {
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 477, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel3)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 353, Short.MAX_VALUE)
                         .addComponent(sourceClipboardButton)))
                 .addContainerGap())
         );
@@ -229,7 +213,7 @@ public class TextPatternsUI extends javax.swing.JFrame {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(sourceGoButton)
                     .addComponent(sourceClearButton))
-                .addContainerGap(28, Short.MAX_VALUE))
+                .addContainerGap(38, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Source", jPanel2);
@@ -301,23 +285,14 @@ public class TextPatternsUI extends javax.swing.JFrame {
 
     private void sourceGoButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sourceGoButtonActionPerformed
         // Go button
+        outputTextArea.setText("");
+        try{
+            stringRegex = sourceTextArea.getText();
+         } catch(Exception e){System.err.println("Error.");}
         getMode();
         compileReg();
         
-        
     }//GEN-LAST:event_sourceGoButtonActionPerformed
-
-    private void modeEmailsRadioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_modeEmailsRadioActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_modeEmailsRadioActionPerformed
-
-    private void modePhoneRadioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_modePhoneRadioActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_modePhoneRadioActionPerformed
-
-    private void modeWebsiteRadioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_modeWebsiteRadioActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_modeWebsiteRadioActionPerformed
 
     /**
      * @param args the command line arguments
@@ -375,7 +350,7 @@ public class TextPatternsUI extends javax.swing.JFrame {
     private javax.swing.JButton sourceGoButton;
     public static javax.swing.JTextArea sourceTextArea;
     // End of variables declaration//GEN-END:variables
-    public static String S = "c@c.com and calum@test.com and what@wwwww.com";
-    public static Matcher M = Pattern.compile("[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+").matcher(S);
+  
+    
 
 }
