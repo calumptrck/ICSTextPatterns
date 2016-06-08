@@ -1,5 +1,5 @@
 import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.*;
 import java.awt.datatransfer.DataFlavor;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -14,15 +14,19 @@ import java.util.regex.Pattern;
  * for either email addresses, phone numbers, or web-site URLs. Display the results
  * in a textArea box, and allow the user to copy the contents to their clipboard. 
  */
+
+// TODO: Fix Website regex, write event for "copy to clipboard" button, test.
+
 public class TextPatternsUI extends javax.swing.JFrame {
     private String stringRegex="";
     private Matcher compiler;
     
     // REGEX SEARCH PATTERNS
-    public String rEmail = "[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]{2,6)+";
-    public String rPhone = "(\\+\\d)*\\s*(\\(\\d{3}\\)\\s*)*\\d{3}(-{0,1}|\\s{0,1})\\d{2}(-{0,1}|\\s{0,1})\\d{2}";
-    public String rWebsite = "((http[s]?|ftp):\\/)?\\/?([^:\\/\\s]+)((\\/\\w+)*\\/)([\\w\\-\\.]+[^#?\\s]+)(.*)?(#[\\w\\-]+)?";
+    private final String rEmail = "[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]{2,6)+";
+    private final String rPhone = "(\\d{3}|\\(\\d{3}\\))?(\\s|-|\\.)?(\\d{3})(\\s|-|\\.)?(\\d{4})";
+    private final String rWebsite = "(a-zA-Z0-9_+-)?(\\.)?(a-zA-Z0-9_+-)(\\.)(a-zA-Z0-9_+-){2,6}"; // TO DO: FIX, SMH REGEX 
     
+  
     
     /**
      * Creates new form TextPatternsUI
@@ -42,6 +46,7 @@ public class TextPatternsUI extends javax.swing.JFrame {
         return result;
     }
     
+  
     public void compileReg() {
         stringRegex = sourceTextArea.getText();
         while (compiler.find()) {
@@ -324,6 +329,7 @@ public class TextPatternsUI extends javax.swing.JFrame {
          } catch(Exception e){System.err.println("Error.");}
         getMode();
         compileReg();
+       
         
     }//GEN-LAST:event_sourceGoButtonActionPerformed
 
