@@ -5,6 +5,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher; 
 import java.util.regex.Pattern;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 /**
  * Date: Jun 5, 2016 
@@ -15,29 +17,30 @@ import java.util.regex.Pattern;
  * in a textArea box, and allow the user to copy the contents to their clipboard. 
  */
 
-// TODO: Fix Website regex, write event for "copy to clipboard" button, test.
+// TODO: Write event for "copy to clipboard" button, test.
 
-public class TextPatternsUI extends javax.swing.JFrame {
+    public class TextPatternsUI extends javax.swing.JFrame {
     private String stringRegex="";
     private Matcher compiler;
+    String compiled;
     
     // REGEX SEARCH PATTERNS
-    private final String rEmail = "[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]{2,6)+";
+    private final String rEmail = "[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]{2,6}+";
     private final String rPhone = "(\\d{3}|\\(\\d{3}\\))?(\\s|-|\\.)?(\\d{3})(\\s|-|\\.)?(\\d{4})";
-    private final String rWebsite = "(a-zA-Z0-9_+-)?(\\.)?(a-zA-Z0-9_+-)(\\.)(a-zA-Z0-9_+-){2,6}"; // TO DO: FIX, SMH REGEX 
+    private final String rWebsite = "(http(s)?:\\/\\/.)?(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)";  
     
-  
     
-    /**
-     * Creates new form TextPatternsUI
-     */
+    
+    
+    // Creates new form TextPatternsUI
+    
     public TextPatternsUI() {
         initComponents();
+        
     }
-/**
- * Grabs the user's clipboard contents 
- */
-     
+
+    // Grabs the user's clipboard contents 
+   
     public static String getClip() throws Exception {
 
         Toolkit toolkit = Toolkit.getDefaultToolkit();
@@ -46,8 +49,8 @@ public class TextPatternsUI extends javax.swing.JFrame {
         return result;
     }
     
-  
-    public void compileReg() {
+    // Compiles regex into groups and appends results to output textArea.
+    public void appendResults() {
         stringRegex = sourceTextArea.getText();
         while (compiler.find()) {
         System.out.println(compiler.group());
@@ -58,15 +61,15 @@ public class TextPatternsUI extends javax.swing.JFrame {
     
     
 /**
- * Find what the user wants to search for, and which RegEx to compile.
- * Also sets the RegEx compile search pattern.
+ * Find what the user wants to search for, and which RegEx search pattern to compile,
+ * then compiles it.
  * 
  * Mode 0 = Email
  * Mode 1 = Phone Numbers
  * Mode 2 = Web-site URLs
  * 
  */
-    public void getMode() {
+    public void compileReg() {
         int mode;
         if (modeEmailsRadio.isSelected()) {
             mode = 0;
@@ -152,7 +155,7 @@ public class TextPatternsUI extends javax.swing.JFrame {
                     .addComponent(modePhoneRadio)
                     .addComponent(modeEmailsRadio)
                     .addComponent(jLabel1))
-                .addContainerGap(371, Short.MAX_VALUE))
+                .addContainerGap(373, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -168,7 +171,7 @@ public class TextPatternsUI extends javax.swing.JFrame {
                 .addContainerGap(197, Short.MAX_VALUE))
         );
 
-        tabs.addTab("Mode", jPanel1);
+        tabs.addTab("Mode", new javax.swing.ImageIcon(getClass().getResource("/more.png")), jPanel1, ""); // NOI18N
 
         jLabel3.setText("Text input:");
 
@@ -209,7 +212,7 @@ public class TextPatternsUI extends javax.swing.JFrame {
                         .addComponent(sourceGoButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(sourceClearButton))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 477, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 595, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 353, Short.MAX_VALUE)
@@ -229,10 +232,10 @@ public class TextPatternsUI extends javax.swing.JFrame {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(sourceGoButton)
                     .addComponent(sourceClearButton))
-                .addContainerGap(38, Short.MAX_VALUE))
+                .addContainerGap(46, Short.MAX_VALUE))
         );
 
-        tabs.addTab("Source", jPanel2);
+        tabs.addTab("Source", new javax.swing.ImageIcon(getClass().getResource("/download-arrow.png")), jPanel2); // NOI18N
 
         outputTextArea.setColumns(20);
         outputTextArea.setRows(5);
@@ -285,7 +288,7 @@ public class TextPatternsUI extends javax.swing.JFrame {
                 .addContainerGap(18, Short.MAX_VALUE))
         );
 
-        tabs.addTab("Output", jPanel3);
+        tabs.addTab("Output", new javax.swing.ImageIcon(getClass().getResource("/tick-sign.png")), jPanel3); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -322,53 +325,43 @@ public class TextPatternsUI extends javax.swing.JFrame {
     }//GEN-LAST:event_sourceClearButtonActionPerformed
 
     private void sourceGoButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sourceGoButtonActionPerformed
-        // Go button
+        // Go button,
         outputTextArea.setText("");
-        try{
-            stringRegex = sourceTextArea.getText();
-         } catch(Exception e){System.err.println("Error.");}
-        getMode();
+        stringRegex = sourceTextArea.getText();
         compileReg();
-       
+        appendResults();
+        compiled = outputTextArea.getText();
         
     }//GEN-LAST:event_sourceGoButtonActionPerformed
 
+    // Set output textArea to empty string.
     private void outputClearButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_outputClearButtonActionPerformed
         // output clear button
         outputTextArea.setText("");
     }//GEN-LAST:event_outputClearButtonActionPerformed
 
+    
+    // Create new clipbard variable. Set clipboard to output textArea contents.
     private void outputClipboardButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_outputClipboardButtonActionPerformed
-        // output clipboard button (TODO)
+        // output clipboard button 
+        StringSelection stringSelection = new StringSelection(compiled);
+        Clipboard clpbrd = Toolkit.getDefaultToolkit().getSystemClipboard();
+        clpbrd.setContents(stringSelection, null);
+      
     }//GEN-LAST:event_outputClipboardButtonActionPerformed
 
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
+        // Customized look and feel code to show the OS's default UI elements 
+       
         try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(TextPatternsUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(TextPatternsUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(TextPatternsUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(TextPatternsUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
         }
-        //</editor-fold>
 
+       
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
